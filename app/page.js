@@ -1,26 +1,67 @@
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+// app/page.js (client component)
+"use client";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function HomePage() {
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Required"),
+  password: Yup.string().required("Required"),
+});
+
+export default function LoginPage() {
+  const router = useRouter();
+
+  async function handleLogin(values, { setSubmitting }) {
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        Swal.fire({ icon: "error", title: "Login failed", text: data.message || "Invalid credentials" });
+      } else {
+        Swal.fire({ icon: "success", title: "Logged in", text: "Welcome back!" });
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      Swal.fire({ icon: "error", title: "Error", text: "Unexpected error" });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white text-gray-900">
-      <Header />
+    <div className="page-bg">
+      <div className="card auth-card">
+        <h2 className="title">Welcome Back</h2>
 
-      <main className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-blue-700">
-          Welcome to NextTail 🚀
-        </h2>
-        <p className="text-lg md:text-xl max-w-2xl mb-8 text-gray-600">
-          A clean and modern starter layout built with Next.js and Tailwind CSS.
-          Beautiful, responsive, and easy to customize.
-        </p>
+        <Formik initialValues={{ email: "", password: "" }} validationSchema={LoginSchema} onSubmit={handleLogin}>
+          {({ isSubmitting }) => (
+            <Form className="form">
+              <label className="label">Email</label>
+              <Field name="email" type="email" className="input" />
+              <div className="error"><ErrorMessage name="email" /></div>
 
-        <button className="px-8 py-3 bg-blue-600 text-white rounded-full shadow hover:bg-blue-700 transition transform hover:scale-105">
-          Get Started
-        </button>
-      </main>
+              <label className="label">Password</label>
+              <Field name="password" type="password" className="input" />
+              <div className="error"><ErrorMessage name="password" /></div>
 
-      <Footer />
+              <button className="btn primary" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Logging in..." : "Login"}
+              </button>
+
+              <div style={{ marginTop: 12 }}>
+                Don't have an account? <Link href="/signup"><span className="link">Sign up</span></Link>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
 }
