@@ -31,8 +31,18 @@ export async function POST(req) {
       { expiresIn: TOKEN_EXPIRE_SECONDS }
     );
 
-    // Set cookie header
-    const res = NextResponse.json({ message: "Login successful" }, { status: 200 });
+    const res = NextResponse.json(
+      {
+        message: "Login successful",
+        user: {
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+        },
+      },
+      { status: 200 }
+    );
+
     const secure = process.env.NODE_ENV === "production";
     res.headers.set(
       "Set-Cookie",

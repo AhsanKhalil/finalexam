@@ -1,4 +1,3 @@
-// app/api/items/[id]/route.js
 import connectToDatabase from "@/lib/mongodb";
 import Item from "@/models/Item";
 import jwt from "jsonwebtoken";
@@ -24,24 +23,74 @@ async function verifyTokenFromRequest(req) {
   }
 }
 
+// ✅ GET single item
 export async function GET(req) {
   const user = await verifyTokenFromRequest(req);
-  if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  if (!user)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  // Extract id from URL
   const url = new URL(req.url);
-  const paths = url.pathname.split("/");
-  const id = paths[paths.length - 1]; // last segment is the id
+  const id = url.pathname.split("/").pop();
 
   if (!mongoose.Types.ObjectId.isValid(id))
     return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
 
   await connectToDatabase();
   const item = await Item.findById(id).lean();
-  if (!item) return NextResponse.json({ message: "Not found" }, { status: 404 });
 
+  if (!item) return NextResponse.json({ message: "Not found" }, { status: 404 });
   if (item.userId.toString() !== user.sub.toString())
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
 
   return NextResponse.json({ item }, { status: 200 });
+}
+
+// ✅ PATCH - update item
+export async function PATCH(req) {
+  const user = await verifyTokenFromRequest(req);
+  if (!user)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
+
+  const { title, description } = await req.json();
+
+  await connectToDatabase();
+  const item = await Item.findById(id);
+  if (!item) return NextResponse.json({ message: "Not found" }, { status: 404 });
+  if (item.userId.toString() !== user.sub.toString())
+    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+
+  item.title = title ?? item.title;
+  item.description = description ?? item.description;
+  await item.save();
+
+  return NextResponse.json({ message: "Updated successfully", item }, { status: 200 });
+}
+
+// ✅ DELETE - remove item
+export async function DELETE(req) {
+  const user = await verifyTokenFromRequest(req);
+  if (!user)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
+
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
+
+  await connectToDatabase();
+  const item = await Item.findById(id);
+  if (!item) return NextResponse.json({ message: "Not found" }, { status: 404 });
+  if (item.userId.toString() !== user.sub.toString())
+    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+
+  await item.deleteOne();
+
+  return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
 }
