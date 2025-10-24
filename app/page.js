@@ -1,10 +1,11 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react"; // Eye icons
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
@@ -13,6 +14,7 @@ const LoginSchema = Yup.object().shape({
 
 export default function LoginPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false); // toggle password
 
   // Auto redirect if user already logged in
   useEffect(() => {
@@ -69,9 +71,19 @@ export default function LoginPage() {
                 <div className="text-red-500 text-sm mt-1"><ErrorMessage name="email" /></div>
               </div>
 
-              <div>
+              <div className="relative">
                 <label className="block mb-1 font-medium text-gray-700">Password</label>
-                <Field name="password" type="password" className="input w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <Field
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="input w-full border border-gray-300 rounded-lg px-3 py-2 pr-10"
+                />
+                <div
+                  className="absolute top-9 right-3 cursor-pointer text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </div>
                 <div className="text-red-500 text-sm mt-1"><ErrorMessage name="password" /></div>
               </div>
 

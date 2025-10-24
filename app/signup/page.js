@@ -1,10 +1,11 @@
-// app/signup/page.js (client component)
 "use client";
+import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react"; // Eye icons
 
 const SignupSchema = Yup.object().shape({
   fullName: Yup.string().min(3, "Too short").max(100).required("Required"),
@@ -15,6 +16,8 @@ const SignupSchema = Yup.object().shape({
 
 export default function SignupPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   async function handleSignup(values, { setSubmitting, resetForm }) {
     try {
@@ -40,35 +43,69 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="page-bg">
-      <div className="card auth-card">
-        <h2 className="title">Create Account</h2>
+    <div className="page-bg min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="card auth-card bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Create Account</h2>
 
-        <Formik initialValues={{ fullName: "", email: "", password: "", confirmPassword: "" }} validationSchema={SignupSchema} onSubmit={handleSignup}>
+        <Formik
+          initialValues={{ fullName: "", email: "", password: "", confirmPassword: "" }}
+          validationSchema={SignupSchema}
+          onSubmit={handleSignup}
+        >
           {({ isSubmitting }) => (
-            <Form className="form">
-              <label className="label">Full Name</label>
-              <Field name="fullName" className="input" />
-              <div className="error"><ErrorMessage name="fullName" /></div>
+            <Form className="flex flex-col gap-4">
+              <div>
+                <label className="block mb-1 font-medium text-gray-700">Full Name</label>
+                <Field name="fullName" className="input w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <div className="text-red-500 text-sm mt-1"><ErrorMessage name="fullName" /></div>
+              </div>
 
-              <label className="label">Email</label>
-              <Field name="email" type="email" className="input" />
-              <div className="error"><ErrorMessage name="email" /></div>
+              <div>
+                <label className="block mb-1 font-medium text-gray-700">Email</label>
+                <Field name="email" type="email" className="input w-full border border-gray-300 rounded-lg px-3 py-2" />
+                <div className="text-red-500 text-sm mt-1"><ErrorMessage name="email" /></div>
+              </div>
 
-              <label className="label">Password</label>
-              <Field name="password" type="password" className="input" />
-              <div className="error"><ErrorMessage name="password" /></div>
+              {/* Password Field */}
+              <div className="relative">
+                <label className="block mb-1 font-medium text-gray-700">Password</label>
+                <Field
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="input w-full border border-gray-300 rounded-lg px-3 py-2 pr-10"
+                />
+                <div
+                  className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </div>
+                <div className="text-red-500 text-sm mt-1"><ErrorMessage name="password" /></div>
+              </div>
 
-              <label className="label">Confirm Password</label>
-              <Field name="confirmPassword" type="password" className="input" />
-              <div className="error"><ErrorMessage name="confirmPassword" /></div>
+              {/* Confirm Password Field */}
+              <div className="relative">
+                <label className="block mb-1 font-medium text-gray-700">Confirm Password</label>
+                <Field
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="input w-full border border-gray-300 rounded-lg px-3 py-2 pr-10"
+                />
+                <div
+                  className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-gray-500"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </div>
+                <div className="text-red-500 text-sm mt-1"><ErrorMessage name="confirmPassword" /></div>
+              </div>
 
-              <button className="btn primary" type="submit" disabled={isSubmitting}>
+              <button className="btn primary bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg mt-2" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Registering..." : "Sign up"}
               </button>
 
-              <div style={{ marginTop: 12 }}>
-                Already have account? <Link href="/"><span className="link">Login</span></Link>
+              <div className="text-center text-gray-600 mt-4">
+                Already have account? <Link href="/"><span className="text-blue-600 hover:underline">Login</span></Link>
               </div>
             </Form>
           )}
