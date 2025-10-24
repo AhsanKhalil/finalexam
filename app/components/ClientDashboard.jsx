@@ -113,14 +113,41 @@ export default function ClientDashboard() {
     const { value: formValues } = await MySwal.fire({
       title: "Add New Item",
       html: `
-        <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-          <input id="swal-title" class="swal2-input mt-2 mb-2 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full" placeholder="Title"/>
-          <textarea id="swal-description" class="swal2-textarea mt-2 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full" placeholder="Description"></textarea>
+      <div class="p-6 bg-gray-50 rounded-2xl shadow-inner text-left">
+        <div class="mb-5">
+          <label for="swal-title" class="block text-base font-semibold text-gray-800 mb-2">
+            Title
+          </label>
+          <input
+            id="swal-title"
+            class="swal2-input block border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm
+                   shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                   transition duration-200 placeholder-gray-400"
+            style="width: 80%; box-sizing: border-box;"
+            placeholder="Enter title"
+          />
         </div>
-      `,
+    
+        <div>
+          <label for="swal-description" class="block text-base font-semibold text-gray-800 mb-2">
+            Description
+          </label>
+          <textarea
+            id="swal-description"
+            class="swal2-textarea block border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm
+                     shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                     transition duration-200 placeholder-gray-400 resize-none"
+            style="width: 80%; box-sizing: border-box;"
+            placeholder="Enter description"
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
+    `,
+    
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "Add Item",
+      confirmButtonText: "Add",
       preConfirm: () => {
         const title = document.getElementById("swal-title").value;
         const description = document.getElementById("swal-description").value;
@@ -157,15 +184,47 @@ export default function ClientDashboard() {
 
     const { value: formValues } = await MySwal.fire({
       title: "Edit Item",
+    
       html: `
-        <div class="p-4 bg-gray-50 rounded-xl shadow-inner">
-          <input id="swal-title" class="swal2-input mt-2 mb-2 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full" placeholder="Title" value="${item.title}" />
-          <textarea id="swal-description" class="swal2-textarea mt-2 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full" placeholder="Description">${item.description}</textarea>
+      <div class="p-6 bg-gray-50 rounded-2xl shadow-inner text-left">
+        <div class="mb-5">
+          <label for="swal-title" class="block text-base font-semibold text-gray-800 mb-2">
+            Title
+          </label>
+          <input
+            id="swal-title"
+            class="swal2-input block border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm
+                   shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                   transition duration-200 placeholder-gray-400"
+            style="width: 80%; box-sizing: border-box;"
+            placeholder="Enter title"
+            value="${item.title}"
+          />
         </div>
-      `,
+    
+        <div>
+          <label for="swal-description" class="block text-base font-semibold text-gray-800 mb-2">
+            Description
+          </label>
+          <textarea
+            id="swal-description"
+            class="swal2-textarea block border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm
+                     shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                     transition duration-200 placeholder-gray-400 resize-none"
+            style="width: 80%; box-sizing: border-box;"
+            placeholder="Enter description"
+            rows="4"
+          >${item.description}</textarea>
+        </div>
+      </div>
+    `,
+    
+    
+    
+    
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "Save Changes",
+      confirmButtonText: "Save",
       preConfirm: () => {
         const title = document.getElementById("swal-title").value;
         const description = document.getElementById("swal-description").value;
